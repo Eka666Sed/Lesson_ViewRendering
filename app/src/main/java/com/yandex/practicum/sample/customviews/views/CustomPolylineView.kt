@@ -2,11 +2,11 @@ package com.yandex.practicum.sample.customviews.views
 
 import android.content.Context
 import android.graphics.Canvas
+import android.graphics.Color
 import android.graphics.Paint
+import android.graphics.Path
 import android.util.AttributeSet
-import android.util.Log
 import android.view.View
-import com.yandex.practicum.sample.customviews.R
 
 
 class CustomPolylineView @JvmOverloads constructor(
@@ -15,45 +15,36 @@ class CustomPolylineView @JvmOverloads constructor(
     defStyleAttr: Int = 0,
     defStyleRes: Int = 0,
 ) : View(context, attrs, defStyleAttr, defStyleRes) {
-    private val requiredSize: Int =
-        context.resources.getDimensionPixelSize(R.dimen.polyline_view_size)
-    private val paint = Paint()
+
+    private val paint = Paint().apply {
+        color = Color.BLUE
+        strokeWidth = 5f
+        style = Paint.Style.STROKE
+    }
+
+    private val path = Path()
+
+    init {
+        path.moveTo(50f, 50f)
+        path.lineTo(150f, 100f)
+        path.lineTo(250f, 50f)
+        path.lineTo(350f, 150f)
+        path.lineTo(250f, 200f)
+        path.lineTo(150f, 250f)
+        path.lineTo(50f, 50f)
+    }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        canvas.drawCircle(width / 2f, height / 2f, requiredSize / 2f, paint)
-    }
 
-    override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
-        val widthMode = MeasureSpec.getMode(widthMeasureSpec)
-        val widthSize = MeasureSpec.getSize(widthMeasureSpec)
-        val heightMode = MeasureSpec.getMode(heightMeasureSpec)
-        val heightSize = MeasureSpec.getSize(heightMeasureSpec)
+        canvas.save()
 
-        Log.d("CustomPolylineView", "Width mode: ${modeToString(widthMode)}, size: $widthSize")
-        Log.d("CustomPolylineView", "Height mode: ${modeToString(heightMode)}, size: $heightSize")
+        canvas.translate(100f, 100f)
 
-        val width = determineSize(widthMode, widthSize)
-        val height = determineSize(heightMode, heightSize)
+        // canvas.clipRect(0f, 0f, width.toFloat() / 4, height.toFloat() / 4)
 
-        Log.d("CustomPolylineView", "Measured width: $width, Measured height: $height")
+        canvas.drawPath(path, paint)
 
-        setMeasuredDimension(width, height)
-    }
-
-    private fun determineSize(receivedMode: Int, receivedSize: Int) = when (receivedMode) {
-        MeasureSpec.EXACTLY -> receivedSize
-        MeasureSpec.AT_MOST -> minOf(requiredSize, receivedSize)
-        MeasureSpec.UNSPECIFIED -> requiredSize
-        else -> requiredSize
-    }
-
-    private fun modeToString(mode: Int): String {
-        return when (mode) {
-            MeasureSpec.EXACTLY -> "EXACTLY"
-            MeasureSpec.AT_MOST -> "AT_MOST"
-            MeasureSpec.UNSPECIFIED -> "UNSPECIFIED"
-            else -> "UNKNOWN"
-        }
+        canvas.restore()
     }
 }
