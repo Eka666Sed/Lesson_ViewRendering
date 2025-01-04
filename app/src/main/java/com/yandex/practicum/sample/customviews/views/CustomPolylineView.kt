@@ -4,6 +4,7 @@ import android.content.Context
 import android.graphics.Canvas
 import android.graphics.Paint
 import android.util.AttributeSet
+import android.util.Log
 import android.view.View
 import com.yandex.practicum.sample.customviews.R
 
@@ -22,14 +23,20 @@ class CustomPolylineView @JvmOverloads constructor(
         super.onDraw(canvas)
         canvas.drawCircle(width / 2f, height / 2f, requiredSize / 2f, paint)
     }
+
     override fun onMeasure(widthMeasureSpec: Int, heightMeasureSpec: Int) {
         val widthMode = MeasureSpec.getMode(widthMeasureSpec)
         val widthSize = MeasureSpec.getSize(widthMeasureSpec)
         val heightMode = MeasureSpec.getMode(heightMeasureSpec)
         val heightSize = MeasureSpec.getSize(heightMeasureSpec)
 
+        Log.d("CustomPolylineView", "Width mode: ${modeToString(widthMode)}, size: $widthSize")
+        Log.d("CustomPolylineView", "Height mode: ${modeToString(heightMode)}, size: $heightSize")
+
         val width = determineSize(widthMode, widthSize)
         val height = determineSize(heightMode, heightSize)
+
+        Log.d("CustomPolylineView", "Measured width: $width, Measured height: $height")
 
         setMeasuredDimension(width, height)
     }
@@ -41,4 +48,12 @@ class CustomPolylineView @JvmOverloads constructor(
         else -> requiredSize
     }
 
+    private fun modeToString(mode: Int): String {
+        return when (mode) {
+            MeasureSpec.EXACTLY -> "EXACTLY"
+            MeasureSpec.AT_MOST -> "AT_MOST"
+            MeasureSpec.UNSPECIFIED -> "UNSPECIFIED"
+            else -> "UNKNOWN"
+        }
+    }
 }
